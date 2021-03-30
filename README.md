@@ -3,4 +3,4 @@ Infrastructure as code with terraform
 
 List of Available modules
 
-* [Managed Streaming Kafka](modules/msk/README.md)
+* [Managed Streaming Kafka](AWS/modules/msk/README.md)
