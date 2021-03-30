@@ -7,9 +7,14 @@ resource "aws_msk_cluster" "this" {
     ebs_volume_size = var.ebs_volume_size
     instance_type = var.instance_type
     security_groups = var.security_groups
+    az_distribution = var.az_distribution
   }
   encryption_info {
     encryption_at_rest_kms_key_arn = var.encryption_at_rest_kms_key_arn
+    encryption_in_transit {
+      client_broker = var.enc_client_broker
+      in_cluster = var.enc_in_cluster
+    }
   }
   open_monitoring {
     prometheus {

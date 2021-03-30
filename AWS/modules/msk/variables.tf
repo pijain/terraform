@@ -43,9 +43,17 @@ variable "encryption_at_rest_kms_key_arn" {
   description = "You may specify a KMS key short ID or ARN (it will always output an ARN) to use for encrypting your data at rest. If no key is specified, an AWS managed KMS ('aws/msk' managed service) key will be used for encrypting the data at rest."
 }
 
-variable "jmx_exporter_enabled_in_broker" {}
+variable "jmx_exporter_enabled_in_broker" {
+  type = bool
+  default = false
+  description = "Indicates whether you want to enable or disable the JMX Exporter."
+}
 
-variable "node_exporter_enabled_in_broker" {}
+variable "node_exporter_enabled_in_broker" {
+  type = bool
+  default = false
+  description = "Indicates whether you want to enable or disable the Node Exporter."
+}
 
 variable "cloudwatch_logs" {
   type = map(string)
@@ -63,4 +71,22 @@ variable "s3_logs" {
   type = map(string)
   default = {}
   description = "Indicates whether you want to enable or disable streaming broker logs to S3."
+}
+
+variable "az_distribution" {
+  type = string
+  default = "DEFAULT"
+  description = "The distribution of broker nodes across availability zones"
+}
+
+variable "enc_client_broker" {
+  type = string
+  default = null
+  description = "Encryption setting for data in transit between clients and brokers. Valid values: TLS, TLS_PLAINTEXT, and PLAINTEXT. Default value is TLS"
+}
+
+variable "enc_in_cluster" {
+  type = bool
+  default = true
+  description = "Whether data communication among broker nodes is encrypted. Default value: true"
 }
