@@ -1,13 +1,13 @@
 variable "capacity" {
   description = "The web ACL capacity units (WCUs) required for this rule group."
   type = number
-  default = 0
+  default = 1
 }
 
 variable "description" {
   description = "A friendly description of the rule group."
   type = string
-  default = ""
+  default = "WAF Rule group"
 }
 
 variable "name" {
@@ -21,11 +21,9 @@ variable "rule" {
     {
       name = "rule-1"
       priority = 1
-      action_type = "allow"
+      action_type = {allow={}}
       statement = {
-        geo_match_statement = {
-          country_codes = ["US", "NL"]
-        }
+        geo_match_statement = ["US", "NL"]
       }
       visibility_config = {
         cloudwatch_metrics_enabled = false
@@ -56,4 +54,20 @@ variable "visibility_config" {
     metric_name = "friendly-metric-name"
     sampled_requests_enabled = false
   }]
+}
+
+variable "ip_set" {
+  type = map(string)
+  default = {
+    ip_set_demo = {
+      description         = "demo"
+      scope               = "REGIONAL"
+      ip_address_version  = "IPV4"
+      addresses           = ["1.2.3.4/32", "5.6.7.8/32"]
+      tags                = {
+        tag1 = value1
+        tag2 = value2
+      }
+    }
+  }
 }

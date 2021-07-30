@@ -1,3 +1,8 @@
+module "mod_ipset" {
+  source = "./modules/wafv2_ipset/"
+  ip_set = var.ip_set
+}
+
 resource "aws_wafv2_rule_group" "this" {
   capacity = var.capacity
   name = var.name
@@ -21,15 +26,18 @@ resource "aws_wafv2_rule_group" "this" {
         for_each = rule.value.action_type
         content {
           dynamic allow {
-            for_each = action.key == "allow" ? [1] : []
+            for_each = action.key == "allow" ? [
+              1] : []
             content {}
           }
           dynamic block {
-            for_each = action.key == "block" ? [1] : []
+            for_each = action.key == "block" ? [
+              1] : []
             content {}
           }
           dynamic count {
-            for_each = action.key == "count" ? [1] : []
+            for_each = action.key == "count" ? [
+              1] : []
             content {}
           }
         }
@@ -38,9 +46,15 @@ resource "aws_wafv2_rule_group" "this" {
         for_each = rule.value.statement
         content {
           dynamic "geo_match_statement" {
-            for_each = statement.value.geo_match_statement
+            for_each = lookup(statement.value, "geo_match_statement", [])
             content {
-              country_codes = geo_match_statement.value.country_codes
+              country_codes = split(",", geo_match_statement.value)
+            }
+          }
+          dynamic "ip_set_reference_statement" {
+            for_each = lookup(statement.value, "ip_set_reference_statement", [])
+            content {
+              arn = ""
             }
           }
         }
@@ -50,6 +64,32 @@ resource "aws_wafv2_rule_group" "this" {
         metric_name = rule.value.visibility_config.metric_name
         sampled_requests_enabled = rule.value.visibility_config.sampled_requests_enabled
       }
+    }
+  }
+}
+
+resource "aws_wafv2_rule_group" "test" {
+  capacity = 1
+  name = "test"
+  scope = "test"
+  visibility_config {
+    cloudwatch_metrics_enabled = false
+    metric_name = ""
+    sampled_requests_enabled = false
+  }
+  rule {
+    name = ""
+    priority = 0
+    action {}
+    statement {
+      ip_set_reference_statement {
+        arn = ""
+      }
+    }
+    visibility_config {
+      cloudwatch_metrics_enabled = false
+      metric_name = ""
+      sampled_requests_enabled = false
     }
   }
 }
